@@ -1,0 +1,50 @@
+name: Garmin health pull
+on:
+  schedule:
+    - cron: '45 9 * * *'
+    - cron: '0 14 * * *'
+    - cron: '0 2 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: garmin-pull
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Restore Garmin login token
+        uses: actions/cache@v4
+        with:
+          path: ~/.garmin_tokens
+          key: garmin-tokens-${{ github.run_id }}
+          restore-keys: |
+            garmin-tokens-
+
+      - name: Install deps
+        run: pip install --quiet garminconnect cryptography
+
+      - name: Pull from Garmin Connect
+        env:
+          GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
+          GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
+          ENC_KEY: ${{ secrets.ENC_KEY }}
+        run: python pull.py
+
+      - name: Commit encrypted data
+        run: |
+          git config user.name "life-os-bot"
+          git config user.email "life-os-bot@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "health update"
+          git push
