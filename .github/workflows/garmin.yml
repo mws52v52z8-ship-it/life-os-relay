@@ -39,7 +39,7 @@ jobs:
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
           ENC_KEY: ${{ secrets.ENC_KEY }}
-        run: run: python .github/workflows/pull.py
+        run: python .github/workflows/pull.py
 
       - name: Commit encrypted data
         run: |
