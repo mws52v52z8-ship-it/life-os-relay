@@ -55,7 +55,7 @@ def login():
     if r1 == "needs_mfa":
         api.resume_login(r2, wait_for_mfa_code())
     pathlib.Path(TOKEN_DIR).mkdir(parents=True, exist_ok=True)
-    api.garth.dump(TOKEN_DIR)
+    api.client.dump(TOKEN_DIR)
     save_tokens()
     pathlib.Path("mfa.txt").unlink(missing_ok=True)
     print("login: password + MFA (token stored for future runs)")
