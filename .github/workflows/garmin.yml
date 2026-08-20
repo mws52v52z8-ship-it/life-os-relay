@@ -45,6 +45,6 @@ jobs:
         run: |
           git config user.name "life-os-bot"
           git config user.email "life-os-bot@users.noreply.github.com"
-          git add data/
+          git add -A
           git diff --cached --quiet || git commit -m "health update"
           git push
